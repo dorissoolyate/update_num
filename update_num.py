@@ -8,6 +8,8 @@ from email.message import EmailMessage
 from tkinter import filedialog
 from tkinter import messagebox, filedialog
 from http import server
+import encodings
+from genericpath import isfile
 results = ""
 def calculate_pythagorean_numbers(day, month, year):
     sum_day_month = sum(map(int, str(day))) + sum(map(int, str(month)))
@@ -99,16 +101,33 @@ def calculate_and_show():
     date_str = entry_date.get()
     try:
         birth_date = datetime.strptime(date_str, "%d.%m.%Y")
+        calculate_and_show_save()
+    except ValueError:
+        messagebox.showerror("Ошибка", "Некорректный формат даты. Используйте ДД.ММ.ГГГГ")
+
+def calculate_and_show_save():
+    global results
+    date_str = entry_date.get()
+    print("Дата введена:", date_str)
+    try:
+        birth_date = datetime.strptime(date_str, "%d.%m.%Y")
+        print("Дата успешно разобрана:", birth_date)
         day, month, year = birth_date.day, birth_date.month, birth_date.year
         numbers = calculate_pythagorean_numbers(day, month, year)  
         analysis = nummodule.analyze_numbers(numbers)
         results = f"1-е рабочее число: {numbers[0]}\n2-е рабочее число: {numbers[1]}\n"\
-                  f"3-е рабочее число: {numbers[2]}\n4-е рабочее число: {numbers[3]}\n\nАнализ:\n{analysis}"   
+                  f"3-е рабочее число: {numbers[2]}\n4-е рабочее число: {numbers[3]}\n\nАнализ:\n{analysis}"            
+        print("Результаты расчета получены:", results)
         messagebox.showinfo("Результаты", results)
-    except ValueError:
-        messagebox.showerror("Ошибка", "Некорректный формат даты. Используйте ДД.ММ.ГГГГ")
-        
+        filename = "TextFile1.txt"
+        with open(filename, 'a', encoding='utf-8') as file:
+            file.write(results + '\n')
+        print("Результаты записаны в файл:", filename)
+    except ValueError as e:
+        print("Ошибка:", e)
 
+
+        
 
 root = tk.Tk()
 root.title("Расчет по методу Пифагора")
